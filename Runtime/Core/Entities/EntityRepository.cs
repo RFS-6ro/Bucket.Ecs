@@ -135,7 +135,7 @@ namespace BucketEcs
             _chunks = new RecycleArray<Chunk>(100); // _ CONFIG
             _chunksWithSpaces = new List<ChunkIndex>(100); // _ CONFIG
             _componentStorages = new RecycleArray<ComponentCache>(20); // _ CONFIG
-        }
+        } 
 
         #region Add
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -159,7 +159,7 @@ namespace BucketEcs
             }
             else
             {
-                ChunkIndex chunkIndex = _chunksWithSpaces[0];
+                ChunkIndex chunkIndex = _chunksWithSpaces[^1];
 
                 ref Chunk chunk = ref _chunks[(int)chunkIndex];
                 EntityIndex entityIndex = chunk.AddEntityToCollection(entity);
@@ -204,6 +204,7 @@ namespace BucketEcs
                 ProcessRecycleNodeComponentsStorageCallback(chunkIndex);
             }
 
+            //LATER: есть идея добавить в конфиг дилей в кадрах между удалением последней сущности и переиспользованием репозитория
             if (AllEntitiesCount == 0UL) _world.TryRecycleEntityRepository(this);
         }
 

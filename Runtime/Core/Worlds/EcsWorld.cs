@@ -274,10 +274,10 @@ namespace BucketEcs
 
             if (_pools.Capacity >= (int)componentId && _pools[(ushort)componentId] != null) return (EcsPool<T>)_pools[(ushort)componentId];
             
-            if (_isInitialized) //TODO: check, maybe it can?
-            {
-                throw new Exception("World Was Already Initialized And Cannot Register New Components"); 
-            }
+            // if (_isInitialized) //TODO: check, maybe it can?
+            // {
+            //     throw new Exception("World Was Already Initialized And Cannot Register New Components"); 
+            // }
             
             EcsPool<T> pool = new EcsPool<T>(componentId);
             _pools[(ushort)componentId] = pool;

@@ -229,11 +229,8 @@ namespace BucketEcs
 
             CollectAllRepositoriesForIteration(filter);
             RunSystemOverContextsSingleThread(deltaTime, system);
-            RebalanceAllUsedRepositoriesAfterIteration(ref systemContext);
-
-            _entityRepositoriesInUseContainer.Clear();
-            _entitiesToRemoveContainer.RecycleAll();
-            _iterationContexts.RecycleAll();
+            RemoveOldMigratedEntitiesAfterIteration();
+            ReleaseSystemContextualMemotyAfterIteration();
         }
 
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -262,6 +259,7 @@ namespace BucketEcs
             }
         }
 
+        /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void RunSystemOverContextsSingleThread(float deltaTime, IEcsSystem system)
         {
             for (int i = 0; i < _iterationContexts.Count; i++)
@@ -270,7 +268,6 @@ namespace BucketEcs
             }
         }
 
-        /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void RunSystemOnASingleContext(float deltaTime, IEcsSystem system, int contextIndex)
         {
             ref readonly IterationContext context = ref _iterationContexts[contextIndex];
@@ -278,13 +275,20 @@ namespace BucketEcs
         }
 
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void RebalanceAllUsedRepositoriesAfterIteration(ref EcsSystemContext systemContext)
+        private void RemoveOldMigratedEntitiesAfterIteration()
         {
             foreach (ref var entityToRemove in _entitiesToRemoveContainer)
             {
-                EntityRepository entityRepository = _world.GetEntityRepository(entityToRemove.entityRepositoryId);
-                entityRepository.RemoveEntity(entityToRemove.entityContainer, entityToRemove.entityIndex);
+                entityToRemove.entityRepository.RemoveEntity(entityToRemove.entityContainer, entityToRemove.entityIndex);
             }
+            _entitiesToRemoveContainer.RecycleAll();
+        }
+
+        /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ReleaseSystemContextualMemotyAfterIteration()
+        {
+            _entityRepositoriesInUseContainer.Clear();
+            _iterationContexts.RecycleAll();
         }
     }
 #endregion

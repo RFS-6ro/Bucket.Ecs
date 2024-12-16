@@ -44,6 +44,7 @@ namespace BucketEcs
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clone(ComponentBitMask origin)
         {
+            _count = EcsWorld.LastRegisteredComponentTypeId + 1; //+1 because LastRegisteredComponentTypeId is a valid number
             _bits.Clone(origin._bits);
             _hash = origin._hash;
         }
@@ -158,7 +159,19 @@ namespace BucketEcs
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsComponentIncluded<T>() where T : struct, IEcsComponent
         {
-            int index = ((ushort)GetId<T>()) * _bitsPerComponent;
+            var componentId = GetId<T>();
+            if (_ecsWorld.HasEcsPoolById(componentId) == false)
+            {
+                _ = _ecsWorld.GetEcsPool<T>();
+            }
+
+            return IsComponentIncluded(componentId);
+        }
+
+        /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsComponentIncluded(ComponentId componentId)
+        {
+            int index = ((ushort)componentId) * _bitsPerComponent;
 
             _bits.EnsureCapacity(index + 1);
 
@@ -168,7 +181,19 @@ namespace BucketEcs
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsComponentExcluded<T>() where T : struct, IEcsComponent
         {
-            int index = ((ushort)GetId<T>()) * _bitsPerComponent;
+            var componentId = GetId<T>();
+            if (_ecsWorld.HasEcsPoolById(componentId) == false)
+            {
+                _ = _ecsWorld.GetEcsPool<T>();
+            }
+
+            return IsComponentExcluded(componentId);
+        }
+
+        /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool IsComponentExcluded(ComponentId componentId)
+        {
+            int index = ((ushort)componentId) * _bitsPerComponent;
 
             _bits.EnsureCapacity(index + 1);
 

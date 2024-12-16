@@ -15,17 +15,17 @@ namespace BucketEcs
     {
         internal RemoveEntityContext
         (
-            EntityRepositoryId entityRepositoryId,
+            EntityRepository entityRepository,
             ChunkIndex entityContainer,
             EntityIndex entityIndex
         )
         {
-            this.entityRepositoryId = entityRepositoryId;
+            this.entityRepository = entityRepository;
             this.entityContainer = entityContainer;
             this.entityIndex = entityIndex;
         }
 
-        internal readonly EntityRepositoryId entityRepositoryId;
+        internal readonly EntityRepository entityRepository;
         internal readonly ChunkIndex entityContainer;
         internal readonly EntityIndex entityIndex;
     }
@@ -65,10 +65,13 @@ namespace BucketEcs
 
             this.entityRepositoryId = entityRepositoryId;
             this.entityContainer = entityContainer;
+
+            _currentEntityRepository = _world.GetEntityRepository(entityRepositoryId);
         }
  
         private readonly List<EntityRepository> _entityRepositoriesInUseContainer;
         private readonly RecycleArray<RemoveEntityContext> _entitiesToRemoveContainer;
+        private readonly EntityRepository _currentEntityRepository;
         private readonly Entities _entities;
         private readonly EcsWorld _world;
 
@@ -80,12 +83,26 @@ namespace BucketEcs
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Has<T>() where T : struct, IEcsComponent
         {
-            return _world.GetEcsPoolRaw<T>().HasStorage(entityRepositoryId);
+            ComponentId componentId = EcsComponentDescriptor<T>.TypeIndex;
+            return _currentEntityRepository.BitMask.IsComponentIncluded(componentId);
         }
 
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public StorageAccess<T> Access<T>() where T : struct, IEcsComponent
         {
+            bool has = Has<T>();
+
+            if (has == false)
+            {
+                throw new System.Exception($"Trying to access not attached component of type {typeof(T)}");
+            }
+            
+            var pool = _world.GetEcsPool<T>();
+            if (pool.HasStorage(entityRepositoryId) == false)
+            {
+                pool.CreateStorage(entityRepositoryId);
+            }
+
             return new StorageAccess<T>
             (
                 _world.GetEcsPool<T>().GetStorage(entityRepositoryId), 
@@ -93,12 +110,30 @@ namespace BucketEcs
             );
         }
 
+        /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public MigrationHandler Migration(EntityIndex entityIndex)
+        {
+            var currentBitMask = _currentEntityRepository.BitMask;
+            var newMask = _world.GetNewComponentBitMask();
+            newMask.Clone(currentBitMask);
+
+            return new MigrationHandler
+            (
+                _world,
+                newMask,
+                entityIndex,
+                entityContainer,
+                _currentEntityRepository,
+                _entityRepositoriesInUseContainer,
+                _entitiesToRemoveContainer
+            );
+        }
+        
         //TODO: Right now we can't add more, than one component to entity in a system. API here is going to change in the nearest future.
-        public ref T Add<T>(EntityIndex entityIndex) where T : struct, IEcsComponent
+        public ref T AddSingle<T>(EntityIndex entityIndex) where T : struct, IEcsComponent
         {
             ComponentId componentId = EcsComponentDescriptor<T>.TypeIndex;
-            var currentEntityRepository = _world.GetEntityRepository(entityRepositoryId);
-            var currentBitMask = currentEntityRepository.BitMask;
+            var currentBitMask = _currentEntityRepository.BitMask;
             bool success = currentBitMask.TryAdd(componentId, out var newMask);
 
             if (success == false) throw new System.Exception("currentBitMask.TryAdd Is Not Valid");
@@ -132,18 +167,18 @@ namespace BucketEcs
                 _entityRepositoriesInUseContainer.Add(newEntityRepository);
             }
 
-            Entity migratingEntity = currentEntityRepository.GetEntity(entityContainer, entityIndex);
+            Entity migratingEntity = _currentEntityRepository.GetEntity(entityContainer, entityIndex);
             (ChunkIndex newEntityContainer, EntityIndex newEntityIndex) = newEntityRepository.AddEntity(migratingEntity);
 
             int migrationContextIndex = _entitiesToRemoveContainer.Allocate();
             _entitiesToRemoveContainer[migrationContextIndex] = new RemoveEntityContext
             (
-                entityRepositoryId,
+                _currentEntityRepository,
                 entityContainer,
                 entityIndex
             );
 
-            currentEntityRepository.MigrateEntity(newEntityRepository, (entityContainer, entityIndex), (newEntityContainer, newEntityIndex));
+            _currentEntityRepository.MigrateEntity(newEntityRepository, (entityContainer, entityIndex), (newEntityContainer, newEntityIndex));
 
             var pool = _world.GetEcsPoolRaw<T>();
             if (pool.HasStorage(newEntityRepository.Id) == false)
@@ -152,10 +187,23 @@ namespace BucketEcs
             }
 
             var typedPool = (EcsPool<T>)pool;
-
+ 
             var storage = typedPool.GetStorage(newEntityRepository.Id);
             ref var container = ref storage.GetContainer(newEntityContainer);
             return ref container.components[(int)newEntityIndex];
+        }
+
+
+        /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public MigratedEntityRef Add<T>(EntityIndex entityIndex) where T : struct, IEcsComponent
+        {
+            return Migration(entityIndex).Add<T>().Finish();
+        }
+
+        /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public MigratedEntityRef Del<T>(EntityIndex entityIndex) where T : struct, IEcsComponent
+        {
+            return Migration(entityIndex).Del<T>().Finish();
         }
 
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]

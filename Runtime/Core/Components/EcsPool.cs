@@ -45,7 +45,7 @@ namespace BucketEcs
             get => _id;
         }
 
-        void IEcsPool.CreateStorage(EntityRepositoryId entityRepositoryId)
+        public void CreateStorage(EntityRepositoryId entityRepositoryId)
         {
             int index = (int)entityRepositoryId;
             _activeStorages.EnsureCapacity(index);
@@ -62,13 +62,13 @@ namespace BucketEcs
         }
 
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        bool IEcsPool.HasStorage(EntityRepositoryId entityRepositoryId)
+        public bool HasStorage(EntityRepositoryId entityRepositoryId)
         {
             return _activeStorages[(int)entityRepositoryId];
         }
 
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        IComponentStorage IEcsPool.GetStorageRaw(EntityRepositoryId entityRepositoryId)
+        public IComponentStorage GetStorageRaw(EntityRepositoryId entityRepositoryId)
         {
             return GetStorage(entityRepositoryId);
         }
@@ -88,7 +88,7 @@ namespace BucketEcs
         }
 
         /*V3*/ // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        void IEcsPool.ReleaseStorage(EntityRepositoryId entityRepositoryId)
+        public void ReleaseStorage(EntityRepositoryId entityRepositoryId)
         {
             int index = (int)entityRepositoryId;
             _activeStorages.EnsureCapacity(index);
