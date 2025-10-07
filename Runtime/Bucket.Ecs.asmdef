@@ -1,10 +1,10 @@
 {
     "name": "Bucket.Ecs",
-    "rootNamespace": "BucketEcs",
+    "rootNamespace": "Bucket.Ecs",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
