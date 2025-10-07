@@ -162,7 +162,7 @@ namespace Bucket.Ecs.v3
                 index = _chunks.Length;
                 short newSize = (short)(_chunks.Length << 1);
                 // BLogger.Warning("ArchetypeChunk was resized! Iterations might miss the changes!");
-                BLogger.Warning($"_chunks.Length: {_chunks.Length}, _allEntitiesCount: {_allEntitiesCount}, _notFullChunksIndexes: {UnsafeList.GetCount(_notFullChunksIndexes)}, _entitiesCapacity: {_entitiesCapacity}");
+                // BLogger.Warning($"_chunks.Length: {_chunks.Length}, _allEntitiesCount: {_allEntitiesCount}, _notFullChunksIndexes: {UnsafeList.GetCount(_notFullChunksIndexes)}, _entitiesCapacity: {_entitiesCapacity}");
                 Array.Resize<ArchetypeChunk>(ref _chunks, newSize);
                 _isAlive = BitSet.Resize(_isAlive, newSize);
             }
