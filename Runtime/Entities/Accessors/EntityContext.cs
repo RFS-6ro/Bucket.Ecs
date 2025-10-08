@@ -20,13 +20,13 @@ namespace Bucket.Ecs.v3
         private readonly UnsafeArray* _migrationTable;
         
         public EntityAddress EntityAddress { [Inline(256)] get; }
-        public Entity EntityId { [Inline(256)] get; }
+        public EntityId EntityId { [Inline(256)] get; }
         public bool IsValid { [Inline(256)] get => EntityId.IsValid; }
 
         public EntityContext
         (
             EcsWorld world,
-            in Entity entityId,
+            in EntityId entityId,
             in EntityAddress entityAddress,
             ref UnmanagedComponentsStorage unmanagedComponentsStorage,
             DynamicComponentsStorage managedComponents,

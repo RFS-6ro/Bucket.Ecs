@@ -11,15 +11,15 @@ namespace Bucket.Ecs.v3
 #endif
     using Inline = System.Runtime.CompilerServices.MethodImplAttribute;
 
-    public readonly struct Entity : IComparable<Entity>, IEquatable<Entity>
+    public readonly struct EntityId : IComparable<EntityId>, IEquatable<EntityId>
     {
-        public static Entity Invalid { [Inline(256)] get => new Entity(0UL); }
+        public static EntityId Invalid { [Inline(256)] get => new EntityId(0UL); }
 
         public readonly ulong Id;
 
         public bool IsValid { [Inline(256)] get => Id != 0UL; }
 
-        public Entity(ulong id)
+        public EntityId(ulong id)
         {
             Id = id;
         }
@@ -29,19 +29,19 @@ namespace Bucket.Ecs.v3
         {
             if (obj == null) return false;
 
-            if (obj is not Entity entityId) return false;
+            if (obj is not EntityId entityId) return false;
             
             return this.Equals(entityId);
         }
 
         [Inline(256)]
-        public bool Equals(Entity other)
+        public bool Equals(EntityId other)
         {
             return Id.Equals(other.Id);
         }
 
         [Inline(256)]
-        public int CompareTo(Entity other)
+        public int CompareTo(EntityId other)
         {
             return Id.CompareTo(other.Id);
         }
@@ -60,27 +60,27 @@ namespace Bucket.Ecs.v3
 
         // operators
         [Inline(256)]
-        public static bool operator ==(Entity a, Entity b)
+        public static bool operator ==(EntityId a, EntityId b)
         {
             return a.Equals(b);
         }
 
         [Inline(256)]
-        public static bool operator !=(Entity a, Entity b)
+        public static bool operator !=(EntityId a, EntityId b)
         {
             return a.Equals(b) == false;
         }
 
         [Inline(256)]
-        public static implicit operator ulong(Entity entityId)
+        public static implicit operator ulong(EntityId entityId)
         {
             return entityId.Id;
         }
 
         [Inline(256)]
-        public static implicit operator Entity(ulong id)
+        public static implicit operator EntityId(ulong id)
         {
-            return new Entity(id);
+            return new EntityId(id);
         }
     }
 }

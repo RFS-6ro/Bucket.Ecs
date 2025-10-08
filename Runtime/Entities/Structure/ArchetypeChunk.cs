@@ -27,7 +27,7 @@ namespace Bucket.Ecs.v3
         private short _count;
         private short _capacity;
         private UnsafeArray* _entities;
-        private Entity* _entitiesRaw;
+        private EntityId* _entitiesRaw;
         private UnsafeArray* _migrationTable;
         private ChunkIndex _chunkIndex;
         private ArchetypeId _id;
@@ -65,7 +65,7 @@ namespace Bucket.Ecs.v3
         }
         
         [Inline(256)]
-        public EntityIndexInChunk Add(in Entity entity)
+        public EntityIndexInChunk Add(in EntityId entity)
         {
             // BAssert.False(IsFull);
             EntityIndexInChunk entityIndex = (EntityIndexInChunk)_count;
@@ -90,7 +90,7 @@ namespace Bucket.Ecs.v3
         }
 
         [Inline(256)]
-        public ref Entity Get(EntityIndexInChunk index)
+        public ref EntityId Get(EntityIndexInChunk index)
         {
             BAssert.IndexInRange((short)index, _count);
             return ref *((Entity*)(_entitiesRaw + (short)index));

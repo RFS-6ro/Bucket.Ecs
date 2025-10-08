@@ -117,7 +117,7 @@ namespace Bucket.Ecs.v3
         }
         
         [Inline(256)]
-        internal EntityAddress AddEntity(in Entity entity)
+        internal EntityAddress AddEntity(in EntityId entity)
         {
             BAssert.True(_isInitialized);
             // TODO: asserts
@@ -260,7 +260,7 @@ namespace Bucket.Ecs.v3
         }
         
         [Inline(256)]
-        internal ref readonly Entity GetEntity(in EntityAddress address)
+        internal ref readonly EntityId GetEntity(in EntityAddress address)
         {
             BAssert.True(_isInitialized);
             // TODO: asserts

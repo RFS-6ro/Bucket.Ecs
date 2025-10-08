@@ -175,7 +175,7 @@ namespace Bucket.Ecs.v3
             private int _chunkIndex;
             private UnmanagedChunkData _chunkData;
             private DynamicComponentsStorage _managedComponents;
-            private Entity* _chunkEntitiesPtr;
+            private EntityId* _chunkEntitiesPtr;
             private BitSet* _matchedEntities;
             private bool _allMatch;
             private short _entitiesCount;

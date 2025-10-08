@@ -16,7 +16,7 @@ namespace Bucket.Ecs.v3
     {
         public enum UnsafeAccessMode { None, AllowRead, AllowWrite }
 
-        [AllowUnsafePtr] private readonly Entity* _entities;
+        [AllowUnsafePtr] private readonly EntityId* _entities;
         internal UnmanagedComponentsStorage _unmanagedComponentsStorage;
         private readonly ArchetypeId _archetypeId;
         private readonly ChunkIndex _chunkIndex;
@@ -66,7 +66,7 @@ namespace Bucket.Ecs.v3
         }
 
         [Inline(256)]
-        public Entity GetEntityId(short index)
+        public EntityId GetEntityId(short index)
         {
             BAssert.IndexInRange(index, _count);
             return *(_entities + index);

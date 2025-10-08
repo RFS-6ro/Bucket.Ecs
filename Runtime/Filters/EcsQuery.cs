@@ -19,7 +19,7 @@ namespace Bucket.Ecs.v3
         internal UnmanagedComponentsStorage _unmanagedComponentsStorage;
         internal DynamicComponentsStorage _managedComponents;
         internal UnsafeArray* _migrationTable;
-        internal Entity* _entities;
+        internal EntityId* _entities;
 
         private EcsQuery(EcsFilter filter)
         {
@@ -51,7 +51,7 @@ namespace Bucket.Ecs.v3
 
 #region Access methods
         [Inline(256)]
-        public Entity GetEntityId(in EntityAddress entityAddress)
+        public EntityId GetEntityId(in EntityAddress entityAddress)
         {
             return *(_entities + (short)entityAddress.entityIndex);
         }
