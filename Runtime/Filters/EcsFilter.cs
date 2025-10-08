@@ -281,7 +281,7 @@ namespace Bucket.Ecs.v3
                         // Initialize current chunk:
                         _chunkData = chunk.GetUnmanagedChunkData(null, -1);
                         if (_query != null) _query._unmanagedComponentsStorage = _chunkData._unmanagedComponentsStorage;
-                        _chunkEntitiesPtr = UnsafeArray.GetPtr<Entity>(entitiesInChunk, 0);
+                        _chunkEntitiesPtr = UnsafeArray.GetPtr<EntityId>(entitiesInChunk, 0);
                         if (_query != null) _query._entities = _chunkEntitiesPtr;
                         _entitiesCount = (short)chunk.Count;
                         _managedComponents = chunk.ManagedComponents;

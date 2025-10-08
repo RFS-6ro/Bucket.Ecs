@@ -51,7 +51,7 @@ namespace Bucket.Ecs.v3
             _capacity = (short)entitiesCount;
             _count = 0;
             _entities = chunksDataAllocator.GetEntityArray(id, chunkIndex, _capacity).GetInternal();
-            _entitiesRaw = UnsafeArray.GetPtr<Entity>(_entities, 0);
+            _entitiesRaw = UnsafeArray.GetPtr<EntityId>(_entities, 0);
             _migrationTable = UnsafeArray.Allocate<EntityMigrationData>(_capacity);
             _markedToRemove = BitSet.Allocate(_capacity);
             // ProcessAddNewNodeComponentsStorageCallback(chunkIndex);
@@ -69,7 +69,7 @@ namespace Bucket.Ecs.v3
         {
             // BAssert.False(IsFull);
             EntityIndexInChunk entityIndex = (EntityIndexInChunk)_count;
-            *(Entity*)(_entitiesRaw + _count) = entity;
+            *(EntityId*)(_entitiesRaw + _count) = entity;
             ++_count;
 
             // ProcessAddEntityStorageCallback(chunkIndex, entityIndex);
@@ -93,7 +93,7 @@ namespace Bucket.Ecs.v3
         public ref EntityId Get(EntityIndexInChunk index)
         {
             BAssert.IndexInRange((short)index, _count);
-            return ref *((Entity*)(_entitiesRaw + (short)index));
+            return ref *((EntityId*)(_entitiesRaw + (short)index));
         }
 
         [Inline(256)]
@@ -153,7 +153,7 @@ namespace Bucket.Ecs.v3
         {
             _managedComponentsStorage.CombineWith(_count, other._managedComponentsStorage, other._count);
             _unmanagedComponentsStorage.CombineWith(_count, other._unmanagedComponentsStorage, other._count);
-            Memory.ArrayCopy<Entity>(other._entitiesRaw, 0, _entitiesRaw, _count, other._count);
+            Memory.ArrayCopy<EntityId>(other._entitiesRaw, 0, _entitiesRaw, _count, other._count);
             _count += other._count;
         }
 

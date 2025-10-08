@@ -109,7 +109,7 @@ namespace Bucket.Ecs.v3
 
             _entitiesCapacity = Config.MemoryMode == ChunkMemoryMode.FixNumberOfEntities
                 ? Config.ChunkEntitiesCount
-                : Config.ChunkMemorySize / (_componentsSummarizedSize + sizeof(Entity)); // sum entity size to fit it in cache
+                : Config.ChunkMemorySize / (_componentsSummarizedSize + sizeof(EntityId)); // sum entity size to fit it in cache
 
             BAssert.IsNotEmpty(_entitiesCapacity);
 

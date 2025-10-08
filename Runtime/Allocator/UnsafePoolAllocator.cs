@@ -51,7 +51,7 @@ namespace Bucket.Ecs.v3
             short archetypeId = (short)id;
             short chunkId = (short)chunkIndex;
 
-            var arr = GetFromPoolOrAllocate(_freeEntities, size, (s) => new (UnsafeArray.Allocate<Entity>(s)));
+            var arr = GetFromPoolOrAllocate(_freeEntities, size, (s) => new (UnsafeArray.Allocate<EntityId>(s)));
             EnsureCapacity(id, chunkIndex);
             var arrays = _used[archetypeId][chunkId];
             arrays.EntityArray = arr;

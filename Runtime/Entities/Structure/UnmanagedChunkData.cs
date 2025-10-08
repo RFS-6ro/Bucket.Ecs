@@ -48,7 +48,7 @@ namespace Bucket.Ecs.v3
             short contextTypeIndex)
         {
             this = default;
-            _entities = UnsafeArray.GetPtr<Entity>(entities, 0);
+            _entities = UnsafeArray.GetPtr<EntityId>(entities, 0);
             _unmanagedComponentsStorage = unmanagedComponentsStorage;
             _archetypeId = archetypeId;
             _chunkIndex = chunkIndex;
