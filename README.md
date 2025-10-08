@@ -1,5 +1,7 @@
 # Bucket.Ecs
 
+![logo](logo.png)
+
 Just another Ecs with its own pros and cons.
 
 Idea behind Bucket.Ecs is to combine fast iterations from archetype ecs frameworks with fast migrations from non-archetype ecs frameworks.
