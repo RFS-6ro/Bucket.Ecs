@@ -202,7 +202,7 @@ public void Run(in double deltaTime, in UnmanagedChunkData chunkData)
 {
     for (short entityIndex = 0; entityIndex < chunkData.Count; entityIndex++)
     {
-        EntityId entity = chunkData.GetEntityId(entityAddress);
+        EntityId entity = chunkData.GetEntityId(entityIndex);
         var component1 = chunkData.Read<ArchetypeComponent>(entityIndex);
         ref var component2 = ref chunkData.Ref<ArchetypeComponent>(entityIndex);
         chunkData.Write(entityIndex, new ArchetypeComponent() { data = 200 });

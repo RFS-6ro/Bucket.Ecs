@@ -95,7 +95,7 @@ namespace Bucket.Ecs.v3
         {
             // BAssert.True(BitSet.IsSet(_isAlive, (int)archetypeId));
             ref var archetype = ref _archetypes[(int)archetypeId];
-            var entityId = new Entity(_entityIdFactory.GetNewId());
+            var entityId = new EntityId(_entityIdFactory.GetNewId());
             BAssert.True(entityId.IsValid, "Entity id factory created an invalid entity id.");
             return archetype.AddEntity(entityId);
         }
